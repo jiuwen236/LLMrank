@@ -1,0 +1,52 @@
+{
+  "name": "llm-ranking",
+  "version": "1.0.0",
+  "description": "Interactive LLM ranking website with drag-and-drop functionality",
+  "private": true,
+  "workspaces": [
+    "client",
+    "server"
+  ],
+  "scripts": {
+    "dev": "concurrently \"npm run dev:server\" \"npm run dev:client\"",
+    "dev:client": "cd client && npm run dev",
+    "dev:server": "cd server && npm run dev",
+    "build": "npm run build:client && npm run build:server",
+    "build:client": "cd client && npm run build",
+    "build:server": "cd server && npm run build",
+    "start": "cd server && npm run start",
+    "install:all": "npm install && cd client && npm install && cd ../server && npm install",
+    "lint": "npm run lint:client && npm run lint:server",
+    "lint:client": "cd client && npm run lint",
+    "lint:server": "cd server && npm run lint",
+    "clean": "rm -rf node_modules client/node_modules server/node_modules client/dist server/dist"
+  },
+  "devDependencies": {
+    "@types/csv-stringify": "^1.4.3",
+    "concurrently": "^8.2.2",
+    "csv-stringify": "^6.5.2",
+    "husky": "^8.0.3",
+    "lint-staged": "^15.2.0"
+  },
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/jiuwen236/LLMrank.git"
+  },
+  "keywords": [
+    "llm",
+    "ranking",
+    "react",
+    "typescript",
+    "drag-and-drop",
+    "interactive-table"
+  ],
+  "author": "Your Name",
+  "license": "MIT",
+  "dependencies": {
+    "object-assign": "^4.1.1",
+    "streamx": "^2.22.0"
+  }
+}

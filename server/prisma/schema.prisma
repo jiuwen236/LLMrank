@@ -1,0 +1,106 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+model Model {
+  id          Int @id // Use original CSV ID instead of auto-generated
+  name        String // 模型名 (短名) - 可以修改，不再是unique
+  isHidden    Boolean @default(false) // 是否隐藏
+  isModel     Boolean @default(true) // 是否为模型（用于区分模型和控制行）
+  sortOrder   Int @default(0) // 排序顺序
+  showInColumn Boolean @default(false) // 是否显示在列名旁详细信息图标里
+  
+  // 与数据的关系
+  dataPoints DataPoint[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("models")
+}
+
+model Dataset {
+  id            Int @id // Use original CSV ID instead of auto-generated
+  name          String // 名称 (短名) - 可以修改，不再是unique
+  fullName      String // 全名
+  isHidden      Boolean @default(false) // 是否隐藏
+  notes         String? // 备注
+  sortOrder     Int @default(0) // 排序顺序
+  isModelInfo   Boolean @default(false) // 是否为模型信息，与isDataset相反
+  showInModel   Boolean @default(false) // 是否显示在行名旁详细信息图标里
+  
+  // 与数据的关系
+  dataPoints DataPoint[]
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("datasets")
+}
+
+model DataPoint {
+  id        String @id // Format: "modelId_datasetId"
+  modelId   Int
+  datasetId Int
+  value     String? // 数据值 (可能是数字、范围、或带?的估算值)
+  notes     String? // 单个数据点的备注
+  
+  // 关系
+  model   Model   @relation(fields: [modelId], references: [id], onDelete: Cascade)
+  dataset Dataset @relation(fields: [datasetId], references: [id], onDelete: Cascade)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@unique([modelId, datasetId])
+  @@map("data_points")
+}
+
+model UserTable {
+  id          String @id @default(cuid())
+  userId      String @unique // 用户自定义的ID
+  name        String? // 表格名称
+  description String? // 表格描述
+  isDefault   Boolean @default(false) // 是否为默认表格（管理员保存的）
+  
+  // 完整的表格数据 (JSON格式存储)
+  modelsData     String // 模型数据 (JSON)
+  datasetsData   String // 数据集数据 (JSON，包括模型信息数据集)
+  dataPointsData String // 数据点数据 (JSON，包括模型信息数据点)
+  
+  // 表格配置 (现在存储在 modelsData 和 datasetsData 的属性中)
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("user_tables")
+}
+
+model AdminPassword {
+  id       String @id @default(cuid())
+  password String // 管理员密码（应该加密存储）
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("admin_passwords")
+}
+
+model IdCounter {
+  id            String @id @default(cuid())
+  name          String @unique // "model" or "dataset"
+  currentValue  Int @default(99) // 当前最大ID值
+  
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  
+  @@map("id_counters")
+} 

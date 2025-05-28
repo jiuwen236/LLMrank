@@ -1,0 +1,242 @@
+{
+  "title": "LLMrank",
+  "subtitle": "Large Language Model Performance Ranking",
+  "loading": "Loading...",
+  "error": {
+    "loadFailed": "Failed to load"
+  },
+  "save": "Save",
+  "cancel": "Cancel",
+  "confirm": "Confirm",
+  "edit": "Edit",
+  "delete": "Delete",
+  "hide": "Hide",
+  "show": "Show",
+  "download": "Download",
+  "upload": "Upload",
+
+  "table": {
+    "model": "Model",
+    "dataset": "Dataset",
+    "score": "Score",
+    "notes": "Notes",
+    "price": "Price",
+    "context": "Context",
+    "thinking": "Thinking Mode",
+    "apiName": "API Name",
+    "fullName": "Full Name",
+    "category": "Category",
+    "description": "Description"
+  },
+
+  "actions": {
+    "hideModel": "Hide Model",
+    "showModel": "Show Model",
+    "hideDataset": "Hide Dataset",
+    "showDataset": "Show Dataset",
+    "reorderModels": "Reorder Models",
+    "reorderDatasets": "Reorder Datasets",
+    "editCell": "Edit Cell",
+    "saveConfig": "Save Configuration",
+    "loadConfig": "Load Configuration",
+    "downloadCsv": "Download CSV",
+    "switchLanguage": "Switch Language",
+    "switchTheme": "Switch Theme",
+    "reset": "Reset"
+  },
+
+  "dialog": {
+    "editCell": {
+      "title": "Edit Data",
+      "value": "Value",
+      "valuePlaceholder": "Enter value",
+      "valueHint": "Supports multiple values (separated by /), estimated values (with ?), etc.",
+      "notes": "Notes",
+      "notesPlaceholder": "Enter notes (optional)",
+      "placeholder": {
+        "value": "Enter value",
+        "notes": "Enter notes (optional)"
+      }
+    },
+    "save": {
+      "title": "Save Table",
+      "userId": "User ID",
+      "placeholder": "Enter User ID",
+      "adminNote": "Saving with admin password will update default configuration",
+      "description": "Save Instructions",
+      "tableNameLabel": "Table Name (Optional)",
+      "tableNamePlaceholder": "Give this saved table a name",
+      "descriptionLabel": "Description (Optional)",
+      "descriptionPlaceholder": "Describe the features or purpose of this table",
+      "adminToggle": "I am an administrator (use admin password)",
+      "adminPasswordLabel": "Admin Password",
+      "adminPasswordPlaceholder": "Enter admin password",
+      "adminMode": "Administrator Mode",
+      "adminModeNote": "Tables saved with admin password will replace the current default data and be visible to all users.",
+      "saveCurrentTable": "Save Current Table",
+      "saveDescription1": "• Saved table includes all data, sorting and hidden settings",
+      "saveDescription2": "• Will save as admin, becoming default data",
+      "loginFirst": "Please login first",
+      "loginDescription": "You need to login with a User ID before saving the table"
+    },
+    "load": {
+      "title": "Load Table",
+      "userId": "User ID",
+      "placeholder": "Enter User ID",
+      "loadDescription1": "• Enter existing User ID to load corresponding table configuration",
+      "loadDescription2": "• Enter new User ID to create new user and save current table",
+      "loadDescription3": "• User ID can use any regular characters",
+      "loadDescription4": "• ID and password will be saved in browser",
+      "adminToggle": "I am an admin (enter admin password)",
+      "adminPassword": "Admin Password",
+      "adminPasswordPlaceholder": "Enter admin password",
+      "adminMode": "Admin Mode",
+      "adminModeDescription": "After entering admin password, saved tables will become default data.",
+      "userIdMinLength": " must be at least 2 characters",
+      "userIdMaxLength": " cannot exceed 50 characters",
+      "userIdInvalidFormat": "User ID contains invalid characters",
+      "adminPasswordRequired": "Please enter admin password"
+    },
+    "saveConfig": {
+      "title": "Save Configuration",
+      "configId": "Configuration ID",
+      "placeholder": "Enter configuration ID or password",
+      "adminNote": "Saving with admin password will update default configuration"
+    },
+    "loadConfig": {
+      "title": "Load Configuration",
+      "configId": "Configuration ID",
+      "placeholder": "Enter configuration ID"
+    },
+    "hiddenItems": {
+      "title": "Manage Hidden Items",
+      "hiddenModels": "Hidden Models",
+      "hiddenDatasets": "Hidden Datasets",
+      "noHiddenItems": "No hidden items",
+      "showSelected": "Show Selected",
+      "defaultHidden": "(Default Hidden)"
+    },
+    "editModel": {
+      "title": "Edit Model Information",
+      "name": "Model Name",
+      "fullName": "Full Name",
+      "apiName": "API Name",
+      "namePlaceholder": "Enter model name",
+      "fullNamePlaceholder": "Enter full name (optional)",
+      "apiNamePlaceholder": "Enter API name (optional)",
+      "detailsSection": "Model Details"
+    },
+    "editDataset": {
+      "title": "Edit Dataset Information",
+      "name": "Dataset Name",
+      "fullName": "Full Name",
+      "notes": "Notes",
+      "showBesideModel": "Show Beside Model",
+      "namePlaceholder": "Enter dataset name",
+      "fullNamePlaceholder": "Enter full name (optional)",
+      "notesPlaceholder": "Enter notes (optional)",
+      "hideDataset": "Hide this dataset"
+    },
+    "reset": {
+      "title": "Reset",
+      "message": "Please choose reset action:",
+      "restoreDefault": "Reset to Default Data",
+      "clearLocal": "Clear Local ID and Password (Logout)",
+      "restoreDefaultMessage": "Reset current data to default data, keeping user ID.",
+      "clearLocalMessage": "Clear locally saved user ID and password, return to default data.",
+      "restoreDefaultBtn": "Reset to Default",
+      "clearLocalBtn": "Logout"
+    }
+  },
+
+  "messages": {
+    "saveSuccess": "Configuration saved successfully",
+    "loadSuccess": "Configuration loaded successfully",
+    "saveError": "Save failed",
+    "loadError": "Load failed",
+    "dataLoadError": "Failed to load data",
+    "networkError": "Network connection error",
+    "invalidInput": "Invalid input",
+    "configNotFound": "Configuration not found",
+    "restoreSuccess": "Default settings restored",
+    "resetSuccess": "Reset successful",
+    "logoutSuccess": "Logout successful",
+    "adminSaveSuccess": "🎉 Admin authentication successful! Table saved as default data.",
+    "tableSaveSuccess": "✅ Table saved successfully!",
+    "saveRetry": "Save failed, please try again",
+    "themeSwitch": "Theme switched successfully",
+    "resetToDefault": "✅ Reset to default data!",
+    "resetRetry": "Reset failed, please try again",
+    "logoutConfirm": "✅ Logged out successfully!",
+    "logoutRetry": "Logout failed, please try again",
+    "tableLoadSuccess": "✅ Table loaded successfully!",
+    "newUserSuccess": "✅ New User ID created! Current table saved successfully.",
+    "newUserAdminSuccess": "🎉 New User ID created! Admin authentication successful, table saved as default data.",
+    "userCreateFailed": "Failed to create new User ID, please try again",
+    "operationFailed": "Operation failed, please try again",
+    "downloadSuccess": "ZIP file downloaded successfully!",
+    "downloadFailed": "Download failed, please try again"
+  },
+
+  "tooltip": {
+    "modelInfo": "Click to view model details",
+    "datasetInfo": "Click to view dataset details",
+    "dragToReorder": "Drag to reorder",
+    "doubleClickToEdit": "Double click to edit",
+    "doubleClickEditModel": "Double click to edit model information",
+    "doubleClickEditColumn": "Double click to edit column information",
+    "thinkingMode": "Thinking Mode",
+    "estimatedValue": "Estimated Value",
+    "multipleValues": "Multiple Values",
+    "saveTable": "Save Table (Ctrl+S)"
+  },
+
+  "price": {
+    "input": "Input",
+    "output": "Output",
+    "perMillion": "per M tokens",
+    "free": "Free",
+    "unknown": "Unknown"
+  },
+
+  "footer": {
+    "disclaimer": "For reference only, different models perform differently on different tasks"
+  },
+
+  "form": {
+    "inputPrice": "Input price, e.g.: 3.0",
+    "outputPrice": "Output price, e.g.: 15.0",
+    "contextLength": "Context length, e.g.: 128K, 1M",
+    "cutoffDate": "Cutoff date, e.g.: 2024-04",
+    "inputPriceHelp": "Enter numeric price in USD per million tokens",
+    "outputPriceHelp": "Enter numeric price in USD per million tokens",
+    "contextLengthHelp": "Enter context length, e.g.: 128K, 1M, 200K",
+    "cutoffDateHelp": "Enter knowledge cutoff date, e.g.: 2024-04",
+    "notesOptional": "Notes (optional)"
+  },
+
+  "addItems": {
+    "title": "Add Items",
+    "showHidden": "Show Hidden Items",
+    "addNew": "Add New Items",
+    "addModel": {
+      "title": "Add New Model",
+      "nameLabel": "Model Name",
+      "nameRequired": "Please enter model name",
+      "addButton": "Add Model",
+      "addSuccess": "Model added successfully!",
+      "addError": "Failed to add model!"
+    },
+    "addDataset": {
+      "title": "Add New Dataset",
+      "nameLabel": "Dataset Name",
+      "fullNameLabel": "Full Name",
+      "notesLabel": "Notes",
+      "isModelInfoLabel": "Is Model Information",
+      "nameRequired": "Please enter dataset name",
+      "addButton": "Add Dataset",
+      "addSuccess": "Dataset added successfully!",
+      "addError": "Failed to add dataset!"
+    }
+  }
+}

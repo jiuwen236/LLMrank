@@ -1,0 +1,242 @@
+{
+  "title": "LLMrank",
+  "subtitle": "大语言模型性能排名对比",
+  "loading": "加载中...",
+  "error": {
+    "loadFailed": "加载失败"
+  },
+  "save": "保存",
+  "cancel": "取消",
+  "confirm": "确认",
+  "edit": "编辑",
+  "delete": "删除",
+  "hide": "隐藏",
+  "show": "显示",
+  "download": "下载",
+  "upload": "上传",
+
+  "table": {
+    "model": "模型",
+    "dataset": "数据集",
+    "score": "分数",
+    "notes": "备注",
+    "price": "价格",
+    "context": "上下文",
+    "thinking": "思维模式",
+    "apiName": "API名称",
+    "fullName": "完整名称",
+    "category": "分类",
+    "description": "描述"
+  },
+
+  "actions": {
+    "hideModel": "隐藏模型",
+    "showModel": "显示模型",
+    "hideDataset": "隐藏数据集",
+    "showDataset": "显示数据集",
+    "reorderModels": "重新排序模型",
+    "reorderDatasets": "重新排序数据集",
+    "editCell": "编辑单元格",
+    "saveConfig": "保存配置",
+    "loadConfig": "加载配置",
+    "downloadCsv": "下载数据包",
+    "switchLanguage": "切换语言",
+    "switchTheme": "切换主题",
+    "reset": "重置"
+  },
+
+  "dialog": {
+    "editCell": {
+      "title": "编辑数据",
+      "value": "数值",
+      "valuePlaceholder": "请输入数值",
+      "valueHint": "支持多值（用/分隔）、推测值（加?）等格式",
+      "notes": "备注",
+      "notesPlaceholder": "请输入备注（可选）",
+      "placeholder": {
+        "value": "请输入数值",
+        "notes": "请输入备注（可选）"
+      }
+    },
+    "save": {
+      "title": "保存表格",
+      "userId": "用户ID",
+      "placeholder": "请输入用户ID",
+      "adminNote": "使用管理员密码保存将更新默认配置",
+      "description": "保存说明",
+      "tableNameLabel": "表格名称 (可选)",
+      "tableNamePlaceholder": "为这个保存的表格起个名字",
+      "descriptionLabel": "描述 (可选)",
+      "descriptionPlaceholder": "描述这个表格的特点或用途",
+      "adminToggle": "我是管理员 (使用管理员密码)",
+      "adminPasswordLabel": "管理员密码",
+      "adminPasswordPlaceholder": "输入管理员密码",
+      "adminMode": "管理员模式",
+      "adminModeNote": "使用管理员密码保存的表格将替换当前的默认数据，所有用户都能看到这个版本。",
+      "saveCurrentTable": "保存当前表格",
+      "saveDescription1": "• 保存的表格包含所有数据、排序和隐藏设置",
+      "saveDescription2": "• 将以管理员身份保存，成为默认数据",
+      "loginFirst": "请先登录",
+      "loginDescription": "保存表格需要先登录用户ID"
+    },
+    "load": {
+      "title": "加载表格",
+      "userId": "用户ID",
+      "placeholder": "请输入用户ID",
+      "loadDescription1": "• 输入已存在的用户ID加载对应的表格配置",
+      "loadDescription2": "• 输入新的用户ID将创建新用户并保存当前表格",
+      "loadDescription3": "• 用户ID可以使用任意常规字符",
+      "loadDescription4": "• ID和密码会保存在浏览器中",
+      "adminToggle": "我是管理员 (输入管理员密码)",
+      "adminPassword": "管理员密码",
+      "adminPasswordPlaceholder": "输入管理员密码",
+      "adminMode": "管理员模式",
+      "adminModeDescription": "输入管理员密码后，保存的表格将成为默认数据。",
+      "userIdMinLength": " 至少2个字符",
+      "userIdMaxLength": " 不能超过50个字符",
+      "userIdInvalidFormat": "用户ID包含不允许的字符",
+      "adminPasswordRequired": "请输入管理员密码"
+    },
+    "saveConfig": {
+      "title": "保存配置",
+      "configId": "配置ID",
+      "placeholder": "请输入配置ID或密码",
+      "adminNote": "使用管理员密码保存将更新默认配置"
+    },
+    "loadConfig": {
+      "title": "加载配置",
+      "configId": "配置ID",
+      "placeholder": "请输入配置ID"
+    },
+    "hiddenItems": {
+      "title": "管理隐藏项",
+      "hiddenModels": "隐藏的模型",
+      "hiddenDatasets": "隐藏的数据集",
+      "noHiddenItems": "没有隐藏项",
+      "showSelected": "显示选中项",
+      "defaultHidden": "(默认隐藏)"
+    },
+    "editModel": {
+      "title": "编辑模型信息",
+      "name": "模型名称",
+      "fullName": "完整名称",
+      "apiName": "API名称",
+      "namePlaceholder": "请输入模型名称",
+      "fullNamePlaceholder": "请输入完整名称（可选）",
+      "apiNamePlaceholder": "请输入API名称（可选）",
+      "detailsSection": "模型详细信息"
+    },
+    "editDataset": {
+      "title": "编辑数据集信息",
+      "name": "数据集名称",
+      "fullName": "完整名称",
+      "notes": "备注",
+      "showBesideModel": "显示在模型旁",
+      "namePlaceholder": "请输入数据集名称",
+      "fullNamePlaceholder": "请输入完整名称（可选）",
+      "notesPlaceholder": "请输入备注（可选）",
+      "hideDataset": "隐藏此数据集"
+    },
+    "reset": {
+      "title": "重置",
+      "message": "请选择重置操作：",
+      "restoreDefault": "重置为默认数据",
+      "clearLocal": "清除本地ID和密码(退出登录)",
+      "restoreDefaultMessage": "将当前数据重置为默认数据，保留用户ID。",
+      "clearLocalMessage": "清除本地保存的用户ID和密码，返回到默认数据。",
+      "restoreDefaultBtn": "重置为默认",
+      "clearLocalBtn": "退出登录"
+    }
+  },
+
+  "messages": {
+    "saveSuccess": "配置保存成功",
+    "loadSuccess": "配置加载成功",
+    "saveError": "保存失败",
+    "loadError": "加载失败",
+    "dataLoadError": "数据加载失败",
+    "networkError": "网络连接错误",
+    "invalidInput": "输入无效",
+    "configNotFound": "配置未找到",
+    "restoreSuccess": "已恢复默认设置",
+    "resetSuccess": "重置成功",
+    "logoutSuccess": "退出登录成功",
+    "adminSaveSuccess": "🎉 管理员身份验证成功！表格已保存为默认数据。",
+    "tableSaveSuccess": "✅ 表格保存成功！",
+    "saveRetry": "保存失败，请重试",
+    "themeSwitch": "主题切换成功",
+    "resetToDefault": "✅ 已重置为默认数据！",
+    "resetRetry": "重置失败，请重试",
+    "logoutConfirm": "✅ 已退出登录！",
+    "logoutRetry": "退出登录失败，请重试",
+    "tableLoadSuccess": "✅ 表格加载成功！",
+    "newUserSuccess": "✅ 新用户ID创建成功！当前表格已保存。",
+    "newUserAdminSuccess": "🎉 新用户ID创建成功！管理员身份验证成功，表格已保存为默认数据。",
+    "userCreateFailed": "用户ID创建失败，请重试",
+    "operationFailed": "操作失败，请重试",
+    "downloadSuccess": "ZIP文件下载成功！",
+    "downloadFailed": "下载失败，请重试"
+  },
+
+  "tooltip": {
+    "modelInfo": "点击查看模型详细信息",
+    "datasetInfo": "点击查看数据集详细信息",
+    "dragToReorder": "拖拽重新排序",
+    "doubleClickToEdit": "双击编辑",
+    "doubleClickEditModel": "双击编辑模型信息",
+    "doubleClickEditColumn": "双击编辑列信息",
+    "thinkingMode": "思维模式",
+    "estimatedValue": "估算值",
+    "multipleValues": "多个数值",
+    "saveTable": "保存表格 (Ctrl+S)"
+  },
+
+  "price": {
+    "input": "输入",
+    "output": "输出",
+    "perMillion": "每百万token",
+    "free": "免费",
+    "unknown": "未知"
+  },
+
+  "footer": {
+    "disclaimer": "仅供参考，不同模型在不同任务上表现不同"
+  },
+
+  "form": {
+    "inputPrice": "输入价格，如: 3.0",
+    "outputPrice": "输出价格，如: 15.0",
+    "contextLength": "上下文长度，如: 128K, 1M",
+    "cutoffDate": "截止日期，如: 2024-04",
+    "inputPriceHelp": "请输入数字价格，单位为美元/百万tokens",
+    "outputPriceHelp": "请输入数字价格，单位为美元/百万tokens",
+    "contextLengthHelp": "请输入上下文长度，如: 128K, 1M, 200K等",
+    "cutoffDateHelp": "请输入知识截止日期，如: 2024-04",
+    "notesOptional": "备注（可选）"
+  },
+
+  "addItems": {
+    "title": "添加项目",
+    "showHidden": "显示隐藏项",
+    "addNew": "添加新项",
+    "addModel": {
+      "title": "添加新模型",
+      "nameLabel": "模型名称",
+      "nameRequired": "请输入模型名称",
+      "addButton": "添加模型",
+      "addSuccess": "模型添加成功！",
+      "addError": "模型添加失败！"
+    },
+    "addDataset": {
+      "title": "添加新数据集",
+      "nameLabel": "数据集名称",
+      "fullNameLabel": "完整名称",
+      "notesLabel": "备注",
+      "isModelInfoLabel": "是否为模型信息",
+      "nameRequired": "请输入数据集名称",
+      "addButton": "添加数据集",
+      "addSuccess": "数据集添加成功！",
+      "addError": "数据集添加失败！"
+    }
+  }
+}
