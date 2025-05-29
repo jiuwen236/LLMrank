@@ -291,7 +291,7 @@ function EditModelDialog({
       });
       setDataPointValues(initialDataPoints);
     }
-  }, [open, model, showInModelDatasets, getDataPoint]);
+  }, [open, model, getDataPoint]);
 
   const handleSave = () => {
     // Save model info
@@ -324,7 +324,8 @@ function EditModelDialog({
     setDataPointValues(prev => ({
       ...prev,
       [datasetId]: {
-        ...prev[datasetId],
+        value: prev[datasetId]?.value || '',
+        notes: prev[datasetId]?.notes || '',
         [field]: newValue,
       },
     }));

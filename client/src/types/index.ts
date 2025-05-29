@@ -7,6 +7,8 @@ export interface Model {
   isHidden: boolean;
   sortOrder: number;
   showInColumn: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface Dataset {
@@ -19,6 +21,8 @@ export interface Dataset {
   sortOrder: number;
   isModelInfo: boolean;
   showInModel: boolean;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface DataPoint {
@@ -27,6 +31,8 @@ export interface DataPoint {
   datasetId: string;
   value?: string;
   notes?: string;
+  createdAt?: string;
+  updatedAt?: string;
 }
 
 export interface UserTable {

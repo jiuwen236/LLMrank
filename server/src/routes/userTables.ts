@@ -243,29 +243,50 @@ router.get('/', async (_req, res) => {
 // GET /api/user-tables/default - Get default table
 router.get('/default', async (_req, res) => {
   try {
-    const defaultTable = await prisma.userTable.findFirst({
-      where: { isDefault: true },
-      orderBy: { updatedAt: 'desc' },
-    });
+    // Load default data from main tables
+    const [models, datasets, dataPoints] = await Promise.all([
+      prisma.model.findMany({ orderBy: { sortOrder: 'asc' } }),
+      prisma.dataset.findMany({ orderBy: { sortOrder: 'asc' } }),
+      prisma.dataPoint.findMany(),
+    ]);
 
-    if (!defaultTable) {
-      return res.status(404).json({
-        success: false,
-        error: 'Default table not found',
-      });
-    }
+    const modelsData = models.map((model: ModelData) => ({
+      id: model.id.toString(),
+      name: model.name,
+      isHidden: model.isHidden,
+      isModel: model.isModel,
+      sortOrder: model.sortOrder,
+      showInColumn: model.showInColumn,
+      createdAt: model.createdAt,
+      updatedAt: model.updatedAt,
+    }));
 
-    // Parse JSON fields
-    const modelsData = JSON.parse(defaultTable.modelsData);
-    const datasetsData = JSON.parse(defaultTable.datasetsData);
-    const dataPointsData = JSON.parse(defaultTable.dataPointsData);
+    const datasetsData = datasets.map((dataset: DatasetData) => ({
+      id: dataset.id.toString(),
+      name: dataset.name,
+      fullName: dataset.fullName,
+      isHidden: dataset.isHidden,
+      notes: dataset.notes,
+      sortOrder: dataset.sortOrder,
+      isModelInfo: dataset.isModelInfo,
+      showInModel: dataset.showInModel,
+      createdAt: dataset.createdAt,
+      updatedAt: dataset.updatedAt,
+    }));
+
+    const dataPointsData = dataPoints.map((dp: DataPointData) => ({
+      id: dp.id,
+      modelId: dp.modelId.toString(),
+      datasetId: dp.datasetId.toString(),
+      value: dp.value,
+      notes: dp.notes,
+    }));
 
     const parsedTable = {
-      ...defaultTable,
       modelsData,
       datasetsData,
       dataPointsData,
-      // Extract order and hidden info from data arrays for backward compatibility
+      // Extract order and hidden info for compatibility
       modelOrder: extractModelOrder(modelsData),
       datasetOrder: extractDatasetOrder(datasetsData),
       hiddenModels: extractHiddenModels(modelsData),
@@ -410,7 +431,6 @@ router.post('/', async (req, res) => {
         modelsData: JSON.stringify(finalModelsData),
         datasetsData: JSON.stringify(finalDatasetsData),
         dataPointsData: JSON.stringify(dataPointsData),
-        isDefault: isAdmin,
       },
       create: {
         userId,
@@ -419,21 +439,12 @@ router.post('/', async (req, res) => {
         modelsData: JSON.stringify(finalModelsData),
         datasetsData: JSON.stringify(finalDatasetsData),
         dataPointsData: JSON.stringify(dataPointsData),
-        isDefault: isAdmin,
       },
     });
 
-    // If this is admin, update other tables to not be default
+    // If this is admin, sync to main database tables
     if (isAdmin) {
-      await prisma.userTable.updateMany({
-        where: {
-          userId: { not: userId },
-          isDefault: true,
-        },
-        data: { isDefault: false },
-      });
-
-      // Sync to actual database tables when admin saves
+      // Sync to main database tables when admin saves
       await syncUserTableToDatabase(
         finalModelsData,
         finalDatasetsData,
@@ -459,18 +470,6 @@ router.post('/', async (req, res) => {
 router.delete('/:userId', async (req, res) => {
   try {
     const { userId } = req.params;
-
-    // Prevent deletion of default table
-    const userTable = await prisma.userTable.findUnique({
-      where: { userId },
-    });
-
-    if (userTable?.isDefault) {
-      return res.status(400).json({
-        success: false,
-        error: 'Cannot delete default table',
-      });
-    }
 
     await prisma.userTable.delete({
       where: { userId },
@@ -548,7 +547,6 @@ router.put('/:userId/reset', async (req, res) => {
         modelsData: JSON.stringify(modelsData),
         datasetsData: JSON.stringify(datasetsData),
         dataPointsData: JSON.stringify(dataPointsData),
-        isDefault: false, // User table should not be default
       },
       create: {
         userId,
@@ -556,7 +554,6 @@ router.put('/:userId/reset', async (req, res) => {
         modelsData: JSON.stringify(modelsData),
         datasetsData: JSON.stringify(datasetsData),
         dataPointsData: JSON.stringify(dataPointsData),
-        isDefault: false,
       },
     });
 

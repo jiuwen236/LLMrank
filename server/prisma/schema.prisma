@@ -10,6 +10,8 @@ datasource db {
   url      = "file:./dev.db"
 }
 
+// Default Data
+
 model Model {
   id          Int @id // Use original CSV ID instead of auto-generated
   name        String // 模型名 (短名) - 可以修改，不再是unique
@@ -64,12 +66,12 @@ model DataPoint {
   @@map("data_points")
 }
 
+// User Data
 model UserTable {
   id          String @id @default(cuid())
   userId      String @unique // 用户自定义的ID
   name        String? // 表格名称
   description String? // 表格描述
-  isDefault   Boolean @default(false) // 是否为默认表格（管理员保存的）
   
   // 完整的表格数据 (JSON格式存储)
   modelsData     String // 模型数据 (JSON)

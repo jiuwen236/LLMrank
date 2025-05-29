@@ -266,24 +266,6 @@ export const useTableStore = create<TableStore>()(
           if (defaultResponse.ok) {
             const { data: defaultTable } = await defaultResponse.json();
 
-            console.log('=== Loaded default table from admin ===');
-            console.log(
-              'DataPoints sample:',
-              defaultTable.dataPointsData.slice(0, 5)
-            );
-            console.log(
-              'Model id=100 dataPoints:',
-              defaultTable.dataPointsData.filter(
-                (dp: DataPoint) => dp.modelId === '100'
-              )
-            );
-            console.log(
-              'Dataset id=57 dataPoints:',
-              defaultTable.dataPointsData.filter(
-                (dp: DataPoint) => dp.datasetId === '57'
-              )
-            );
-
             set({
               models: defaultTable.modelsData,
               datasets: defaultTable.datasetsData,
@@ -320,17 +302,6 @@ export const useTableStore = create<TableStore>()(
         const models = modelsData.data || [];
         const datasets = datasetsData.data || [];
         const dataPoints = dataPointsData.data || [];
-
-        console.log('=== Loaded data from individual APIs ===');
-        console.log('DataPoints sample:', dataPoints.slice(0, 5));
-        console.log(
-          'Model id=100 dataPoints:',
-          dataPoints.filter((dp: DataPoint) => dp.modelId === '100')
-        );
-        console.log(
-          'Dataset id=57 dataPoints:',
-          dataPoints.filter((dp: DataPoint) => dp.datasetId === '57')
-        );
 
         // Initialize order arrays if empty
         const currentState = get();
@@ -613,35 +584,70 @@ export const useTableStore = create<TableStore>()(
       updateModel: (modelId: string, updates: Partial<Model>) => {
         const { models } = get();
         const newModels = models.map(m =>
-          m.id === modelId ? { ...m, ...updates } : m
+          m.id === modelId
+            ? {
+                ...m,
+                ...updates,
+                updatedAt: new Date().toISOString(),
+              }
+            : m
         );
         set({ models: newModels });
       },
 
       addModel: async (model: Omit<Model, 'id'>) => {
+        const { models, modelOrder, datasets, dataPoints } = get();
+
+        const createNewModelData = (id: string) => {
+          const now = new Date().toISOString();
+          const newModel = {
+            ...model,
+            id,
+            createdAt: now,
+            updatedAt: now,
+          };
+
+          // Create data points for this new model for all existing datasets
+          const newDataPoints: DataPoint[] = datasets.map(dataset => ({
+            id: `${id}_${dataset.id}`,
+            modelId: id,
+            datasetId: dataset.id,
+            value: '',
+            notes: '',
+            createdAt: now,
+            updatedAt: now,
+          }));
+
+          return {
+            newModel,
+            newDataPoints,
+          };
+        };
+
         try {
           // Get next available ID from server
           const response = await fetch(`${API_BASE}/api/max-ids`);
           const { data } = await response.json();
-          const newId = data.nextModelId.toString();
-
-          const { models, modelOrder } = get();
-          const newModel = { ...model, id: newId };
+          const { newModel, newDataPoints } = createNewModelData(
+            data.nextModelId.toString()
+          );
 
           set({
             models: [...models, newModel],
-            modelOrder: [...modelOrder, newId],
+            modelOrder: [...modelOrder, newModel.id],
+            dataPoints: [...dataPoints, ...newDataPoints],
           });
         } catch (error) {
           console.error('Error getting next model ID:', error);
           // Fallback to timestamp-based ID
-          const { models, modelOrder } = get();
-          const newId = `model_${Date.now()}`;
-          const newModel = { ...model, id: newId };
+          const { newModel, newDataPoints } = createNewModelData(
+            `model_${Date.now()}`
+          );
 
           set({
             models: [...models, newModel],
-            modelOrder: [...modelOrder, newId],
+            modelOrder: [...modelOrder, newModel.id],
+            dataPoints: [...dataPoints, ...newDataPoints],
           });
         }
       },
@@ -703,7 +709,13 @@ export const useTableStore = create<TableStore>()(
       updateDataset: (datasetId: string, updates: Partial<Dataset>) => {
         const { datasets } = get();
         const newDatasets = datasets.map(d =>
-          d.id === datasetId ? { ...d, ...updates } : d
+          d.id === datasetId
+            ? {
+                ...d,
+                ...updates,
+                updatedAt: new Date().toISOString(),
+              }
+            : d
         );
         set({ datasets: newDatasets });
       },
@@ -715,23 +727,69 @@ export const useTableStore = create<TableStore>()(
           const { data } = await response.json();
           const newId = data.nextDatasetId.toString();
 
-          const { datasets, datasetOrder } = get();
-          const newDataset = { ...dataset, id: newId };
+          const { datasets, datasetOrder, models, dataPoints } = get();
+          const now = new Date().toISOString();
+          const newDataset = {
+            ...dataset,
+            id: newId,
+            createdAt: now,
+            updatedAt: now,
+          };
+
+          // Create data points for this new dataset for all existing models
+          const newDataPoints: DataPoint[] = [];
+          models.forEach(model => {
+            // Create empty data point for each model
+            const dataPointId = `${model.id}_${newId}`;
+            newDataPoints.push({
+              id: dataPointId,
+              modelId: model.id,
+              datasetId: newId,
+              value: '',
+              notes: '',
+              createdAt: now,
+              updatedAt: now,
+            });
+          });
 
           set({
             datasets: [...datasets, newDataset],
             datasetOrder: [...datasetOrder, newId],
+            dataPoints: [...dataPoints, ...newDataPoints],
           });
         } catch (error) {
           console.error('Error getting next dataset ID:', error);
           // Fallback to timestamp-based ID
-          const { datasets, datasetOrder } = get();
+          const { datasets, datasetOrder, models, dataPoints } = get();
           const newId = `dataset_${Date.now()}`;
-          const newDataset = { ...dataset, id: newId };
+          const now = new Date().toISOString();
+          const newDataset = {
+            ...dataset,
+            id: newId,
+            createdAt: now,
+            updatedAt: now,
+          };
+
+          // Create data points for this new dataset for all existing models
+          const newDataPoints: DataPoint[] = [];
+          models.forEach(model => {
+            // Create empty data point for each model
+            const dataPointId = `${model.id}_${newId}`;
+            newDataPoints.push({
+              id: dataPointId,
+              modelId: model.id,
+              datasetId: newId,
+              value: '',
+              notes: '',
+              createdAt: now,
+              updatedAt: now,
+            });
+          });
 
           set({
             datasets: [...datasets, newDataset],
             datasetOrder: [...datasetOrder, newId],
+            dataPoints: [...dataPoints, ...newDataPoints],
           });
         }
       },
@@ -754,15 +812,19 @@ export const useTableStore = create<TableStore>()(
             ...newDataPoints[existingIndex],
             value,
             notes,
+            updatedAt: new Date().toISOString(),
           };
           set({ dataPoints: newDataPoints });
         } else {
+          const now = new Date().toISOString();
           const newDataPoint: DataPoint = {
-            id: `${modelId}-${datasetId}`,
+            id: `${modelId}_${datasetId}`,
             modelId,
             datasetId,
             value,
             notes,
+            createdAt: now,
+            updatedAt: now,
           };
           set({ dataPoints: [...dataPoints, newDataPoint] });
         }
