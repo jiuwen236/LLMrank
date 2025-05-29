@@ -94,7 +94,7 @@ cp server/prisma/dev.db.backup server/prisma/dev.db
 ```bash
 cd server
 
-# 完整导入 (重建数据库)
+# 导入默认数据
 npx tsx scripts/import-csv.ts
 
 # 增量更新 (保留现有数据)
