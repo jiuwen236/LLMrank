@@ -25,7 +25,7 @@ export default function DraggableColumnHeader({
     transition,
     isDragging,
   } = useSortable({
-    id: id,
+    id: `column-${id}`,
     disabled: !isDraggable,
   });
 

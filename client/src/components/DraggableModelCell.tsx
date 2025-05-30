@@ -86,7 +86,7 @@ export default function DraggableModelCell({
     transition,
     isDragging,
   } = useSortable({
-    id: model.id,
+    id: `model-${model.id}`,
   });
 
   // Helper function to check if model is reasoning/thinking mode based on id=57 dataset (即时)

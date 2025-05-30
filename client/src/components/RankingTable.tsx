@@ -4,6 +4,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 import {
   DndContext,
   closestCenter,
+  closestCorners,
   KeyboardSensor,
   PointerSensor,
   useSensor,
@@ -14,6 +15,7 @@ import {
   SortableContext,
   sortableKeyboardCoordinates,
   verticalListSortingStrategy,
+  horizontalListSortingStrategy,
 } from '@dnd-kit/sortable';
 import { useTableStore } from '../stores/useTableStore';
 import { useTranslation } from '../hooks/useTranslation';
@@ -573,6 +575,19 @@ export default function RankingTable() {
     })
   );
 
+  // Custom collision detection algorithm for better column dragging precision
+  const collisionDetection = (args: any) => {
+    const { active } = args;
+
+    // For column dragging, use closest corners which is more precise for horizontal layouts
+    if (active?.id?.toString().startsWith('column-')) {
+      return closestCorners(args);
+    }
+
+    // For model (row) dragging, use closest center
+    return closestCenter(args);
+  };
+
   const handleDragEnd = (event: any) => {
     const { active, over } = event;
 
@@ -580,15 +595,37 @@ export default function RankingTable() {
       return;
     }
 
-    console.log('Drag end:', { active: active.id, over: over.id, columnOrder });
+    console.log('Drag end:', {
+      active: active.id,
+      over: over.id,
+      columnOrder,
+      event: event,
+    });
 
-    // Check if it's a model drag (row)
-    const modelIndex = visibleModels.findIndex(model => model.id === active.id);
-    if (modelIndex >= 0) {
-      const oldIndex = modelIndex;
-      const newIndex = visibleModels.findIndex(model => model.id === over.id);
-      if (newIndex >= 0) {
-        const newOrder = arrayMove(visibleModels, oldIndex, newIndex).map(
+    // Extract the type and actual ID from the prefixed drag ID
+    const getIdInfo = (dragId: string) => {
+      if (dragId.startsWith('model-')) {
+        return { type: 'model', id: dragId.replace('model-', '') };
+      } else if (dragId.startsWith('column-')) {
+        return { type: 'column', id: dragId.replace('column-', '') };
+      }
+      return { type: 'unknown', id: dragId };
+    };
+
+    const activeInfo = getIdInfo(active.id);
+    const overInfo = getIdInfo(over.id);
+
+    // Handle model (row) drag
+    if (activeInfo.type === 'model' && overInfo.type === 'model') {
+      const activeIndex = visibleModels.findIndex(
+        model => model.id === activeInfo.id
+      );
+      const overIndex = visibleModels.findIndex(
+        model => model.id === overInfo.id
+      );
+
+      if (activeIndex >= 0 && overIndex >= 0) {
+        const newOrder = arrayMove(visibleModels, activeIndex, overIndex).map(
           m => m.id
         );
         reorderModels(newOrder);
@@ -596,17 +633,20 @@ export default function RankingTable() {
       return;
     }
 
-    // Check if it's a column drag
-    const columnIndex = columnOrder.findIndex(id => id === active.id);
-    if (columnIndex >= 0) {
-      const targetIndex = columnOrder.findIndex(id => id === over.id);
-      if (targetIndex >= 0) {
-        console.log('Column drag:', {
-          columnIndex,
-          targetIndex,
+    // Handle column drag
+    if (activeInfo.type === 'column' && overInfo.type === 'column') {
+      const activeIndex = columnOrder.findIndex(id => id === activeInfo.id);
+      const overIndex = columnOrder.findIndex(id => id === overInfo.id);
+
+      if (activeIndex >= 0 && overIndex >= 0) {
+        console.log('Column drag details:', {
+          activeId: activeInfo.id,
+          overId: overInfo.id,
+          activeIndex,
+          overIndex,
           oldOrder: columnOrder,
         });
-        const newOrder = arrayMove(columnOrder, columnIndex, targetIndex);
+        const newOrder = arrayMove(columnOrder, activeIndex, overIndex);
         console.log('New column order:', newOrder);
         setColumnOrder(newOrder);
 
@@ -620,19 +660,8 @@ export default function RankingTable() {
 
   // Calculate optimal column widths based on content
   const getColumnWidth = (dataset: Dataset) => {
-    // Model info columns should be narrower
-    const isModelInfoType = [
-      'input_price',
-      'output_price',
-      'context_length',
-      'cutoff_date',
-    ].includes(dataset.name);
-    if (isModelInfoType) {
-      return 60;
-    }
-
     // Base width for dataset name
-    let nameWidth = Math.min(Math.max(dataset.name.length * 6, 40), 80);
+    let nameWidth = Math.min(Math.max(dataset.name.length * 5, 30), 80);
 
     // Check data lengths for this dataset based on processed display values
     let maxDataWidth = 0;
@@ -640,10 +669,8 @@ export default function RankingTable() {
       const dataPoint = getDataPoint(model.id, dataset.id);
       if (dataPoint?.value) {
         // Use the processed display value length instead of raw value length
-        const displayValue = isModelInfoType
-          ? dataPoint.value
-          : processMultiValue(dataPoint.value);
-        maxDataWidth = Math.max(maxDataWidth, displayValue.length * 6);
+        const displayValue = processMultiValue(dataPoint.value);
+        maxDataWidth = Math.max(maxDataWidth, displayValue.length * 5);
       }
     });
 
@@ -761,38 +788,44 @@ export default function RankingTable() {
     <>
       <DndContext
         sensors={sensors}
-        collisionDetection={closestCenter}
+        collisionDetection={collisionDetection}
         onDragEnd={handleDragEnd}
       >
+        {/* Separate contexts for rows and columns */}
         <SortableContext
-          items={[...visibleModels.map(m => m.id), ...columnOrder]}
+          items={visibleModels.map(m => `model-${m.id}`)}
           strategy={verticalListSortingStrategy}
         >
-          <div
-            style={{
-              backgroundColor: 'white',
-              border: '1px solid #f0f0f0',
-              borderRadius: 8,
-              overflow: 'hidden',
-              position: 'relative',
-            }}
+          <SortableContext
+            items={columnOrder.map(id => `column-${id}`)}
+            strategy={horizontalListSortingStrategy}
           >
-            <Table
-              dataSource={visibleModels}
-              columns={columns}
-              rowKey="id"
-              pagination={false}
-              scroll={{
-                x: 'max-content',
-              }}
-              size="small"
-              loading={isLoading}
+            <div
               style={{
-                tableLayout: 'fixed',
+                backgroundColor: 'white',
+                border: '1px solid #f0f0f0',
+                borderRadius: 8,
+                overflow: 'hidden',
+                position: 'relative',
               }}
-              className="fixed-width-table"
-            />
-          </div>
+            >
+              <Table
+                dataSource={visibleModels}
+                columns={columns}
+                rowKey="id"
+                pagination={false}
+                scroll={{
+                  x: 'max-content',
+                }}
+                size="small"
+                loading={isLoading}
+                style={{
+                  tableLayout: 'fixed',
+                }}
+                className="fixed-width-table"
+              />
+            </div>
+          </SortableContext>
         </SortableContext>
       </DndContext>
 
