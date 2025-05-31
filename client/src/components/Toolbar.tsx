@@ -40,6 +40,7 @@ export default function Toolbar() {
     getDataPoint,
     saveUserTable,
     currentUserId,
+    adminPassword,
   } = useTableStore();
 
   const [saveDialogOpen, setSaveDialogOpen] = useState(false);
@@ -60,10 +61,7 @@ export default function Toolbar() {
     try {
       setIsSaving(true);
 
-      // Get admin password from session storage if available
-      const adminPassword = sessionStorage.getItem('adminPassword');
-
-      // Save the table data directly
+      // Use admin password from store if available
       const isAdmin = await saveUserTable(
         currentUserId,
         adminPassword || undefined
@@ -80,7 +78,7 @@ export default function Toolbar() {
     } finally {
       setIsSaving(false);
     }
-  }, [currentUserId, saveUserTable, setSaveDialogOpen, t]);
+  }, [currentUserId, saveUserTable, setSaveDialogOpen, t, adminPassword]);
 
   // Handle Ctrl+S keyboard shortcut
   useEffect(() => {
@@ -123,8 +121,8 @@ export default function Toolbar() {
   const handleRestoreDefault = async () => {
     try {
       await restoreDefaultSettings();
-      // Clear admin password from session storage
-      sessionStorage.removeItem('adminPassword');
+      // Don't clear admin password when restoring default data
+      // The user should remain logged in with admin privileges
       message.success(t('messages.resetToDefault'));
       setResetModalOpen(false);
     } catch (error) {
@@ -388,18 +386,7 @@ export default function Toolbar() {
                 border: '1px solid #d9d9d9',
                 borderRadius: 8,
                 padding: 16,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#1890ff';
-                e.currentTarget.style.backgroundColor = '#f6ffed';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#d9d9d9';
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
-              onClick={handleRestoreDefault}
             >
               <div
                 style={{
@@ -418,7 +405,7 @@ export default function Toolbar() {
                     </Text>
                   </div>
                 </div>
-                <Button type="primary" size="small">
+                <Button type="primary" size="small" onClick={handleRestoreDefault}>
                   {t('dialog.reset.restoreDefaultBtn')}
                 </Button>
               </div>
@@ -430,18 +417,7 @@ export default function Toolbar() {
                 border: '1px solid #d9d9d9',
                 borderRadius: 8,
                 padding: 16,
-                cursor: 'pointer',
-                transition: 'all 0.2s',
               }}
-              onMouseEnter={e => {
-                e.currentTarget.style.borderColor = '#ff7875';
-                e.currentTarget.style.backgroundColor = '#fff2f0';
-              }}
-              onMouseLeave={e => {
-                e.currentTarget.style.borderColor = '#d9d9d9';
-                e.currentTarget.style.backgroundColor = 'transparent';
-              }}
-              onClick={handleClearUserData}
             >
               <div
                 style={{
@@ -460,7 +436,7 @@ export default function Toolbar() {
                     </Text>
                   </div>
                 </div>
-                <Button danger size="small">
+                <Button danger size="small" onClick={handleClearUserData}>
                   {t('dialog.reset.clearLocalBtn')}
                 </Button>
               </div>

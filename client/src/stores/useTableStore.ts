@@ -20,6 +20,11 @@ interface TableStore extends TableState {
   setTheme: (theme: Theme) => void;
   isThemeManuallySet: boolean; // Track if user manually set theme
 
+  // Admin password state
+  adminPassword?: string;
+  setAdminPassword: (password?: string) => void;
+  clearAdminPassword: () => void;
+
   // Data loading
   loadData: () => Promise<void>;
   loadUserTable: (userId: string) => Promise<void>;
@@ -105,6 +110,7 @@ export const useTableStore = create<TableStore>()(
       theme: getSystemTheme(), // Use system theme as default
       isThemeManuallySet: false, // Initially not manually set
       currentUserId: undefined,
+      adminPassword: undefined,
 
       // Language operations
       setLanguage: (lang: Language) => {
@@ -430,9 +436,8 @@ export const useTableStore = create<TableStore>()(
         try {
           const { currentUserId } = get();
 
-          // Clear user ID and admin password from session and local storage
-          set({ currentUserId: undefined });
-          sessionStorage.removeItem('adminPassword');
+          // Clear user ID and admin password from store
+          set({ currentUserId: undefined, adminPassword: undefined });
 
           // Reset local state
           set({
@@ -1000,6 +1005,14 @@ export const useTableStore = create<TableStore>()(
           return aIndex - bIndex;
         });
       },
+
+      // Admin password operations
+      setAdminPassword: (password?: string) => {
+        set({ adminPassword: password });
+      },
+      clearAdminPassword: () => {
+        set({ adminPassword: undefined });
+      },
     }),
     {
       name: 'llm-ranking-store',
@@ -1013,6 +1026,7 @@ export const useTableStore = create<TableStore>()(
         modelOrder: state.modelOrder,
         datasetOrder: state.datasetOrder,
         currentUserId: state.currentUserId,
+        adminPassword: state.adminPassword,
       }),
       onRehydrateStorage: () => state => {
         if (state) {

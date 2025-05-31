@@ -31,16 +31,15 @@ export default function LoadDialog({
   const [loading, setLoading] = useState(false);
   const [usePassword, setUsePassword] = useState(false);
   const { t } = useTranslation();
-  const { loadUserTable, saveUserTable, currentUserId } = useTableStore();
+  const { loadUserTable, saveUserTable, currentUserId, adminPassword, setAdminPassword } = useTableStore();
 
   // Check for cached admin password when dialog opens
   useEffect(() => {
     if (open) {
-      const cachedAdminPassword = sessionStorage.getItem('adminPassword');
-      if (cachedAdminPassword) {
+      if (adminPassword) {
         setUsePassword(true);
         // Also set the password field in the form
-        form.setFieldsValue({ password: cachedAdminPassword });
+        form.setFieldsValue({ password: adminPassword });
       } else {
         setUsePassword(false);
       }
@@ -48,7 +47,7 @@ export default function LoadDialog({
       // Reset state when dialog closes
       setUsePassword(false);
     }
-  }, [open, form]);
+  }, [open, form, adminPassword]);
 
   const handleLoad = async (values: any) => {
     try {
@@ -68,8 +67,8 @@ export default function LoadDialog({
 
         // If admin password was provided, save it for later use
         if (usePassword && password) {
-          // Store admin password in session storage for immediate saves
-          sessionStorage.setItem('adminPassword', password);
+          // Store admin password in store for persistence
+          setAdminPassword(password);
         }
 
         message.success(t('messages.tableLoadSuccess'));
@@ -98,7 +97,7 @@ export default function LoadDialog({
 
           // Store admin password if provided
           if (usePassword && password) {
-            sessionStorage.setItem('adminPassword', password);
+            setAdminPassword(password);
           }
 
           form.resetFields();

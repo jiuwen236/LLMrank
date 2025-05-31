@@ -19,7 +19,7 @@ export default function SaveDialog({
 }: SaveDialogProps) {
   const [loading, setLoading] = useState(false);
   const { t } = useTranslation();
-  const { saveUserTable, currentUserId } = useTableStore();
+  const { saveUserTable, currentUserId, adminPassword } = useTableStore();
 
   const handleSave = async () => {
     // Check if user is logged in
@@ -32,10 +32,7 @@ export default function SaveDialog({
     try {
       setLoading(true);
 
-      // Get admin password from session storage if available
-      const adminPassword = sessionStorage.getItem('adminPassword');
-
-      // Save the table data
+      // Use admin password from store if available
       const isAdmin = await saveUserTable(
         currentUserId,
         adminPassword || undefined
@@ -84,7 +81,7 @@ export default function SaveDialog({
                   {currentUserId}
                 </p>
                 <p>{t('dialog.save.saveDescription1')}</p>
-                {sessionStorage.getItem('adminPassword') && (
+                {adminPassword && (
                   <p style={{ color: '#faad14' }}>
                     {t('dialog.save.saveDescription2')}
                   </p>
