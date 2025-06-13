@@ -34,6 +34,9 @@ npm run dev:client
 
 # 仅启动后端 (3000端口)
 npm run dev:server
+
+# 格式化代码
+npx prettier --write .
 ```
 
 ### 直接部署
@@ -54,7 +57,10 @@ npm run start
 ### pm2部署
 
 ```bash
+# 部署到生产环境
 bash deploy-production.sh
+# 停止服务
+pm2 stop all
 ```
 
 ## 数据库管理

@@ -35,6 +35,12 @@ npx tsx src/scripts/import-csv.ts
 
 # 启动开发环境
 npm run dev
+
+# 格式化代码
+npx prettier --write .
+
+# 部署到生产环境
+bash deploy-production.sh
 ```
 
 ## 📚 详细文档
