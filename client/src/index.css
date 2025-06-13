@@ -34,9 +34,11 @@ body[data-theme='dark'] {
   --bg-secondary: #2a2a2a;
   --bg-tertiary: #3a3a3a;
   --text-primary: #ffffff;
+  --text-primary: rgb(240, 246, 252);
   --text-secondary: #b0b0b0;
   --border-color: #404040;
   --hover-bg: #333333;
+  --null-value-color: rgb(224, 230, 236);
 }
 
 /* Light mode variables */
@@ -811,34 +813,17 @@ body[data-theme='light'] .thinking-model,
 body[data-theme='light'] .ant-typography.thinking-model,
 body[data-theme='light'] span.thinking-model,
 body[data-theme='light'] .ant-table-cell .thinking-model {
-  color: #1e3a8a !important; /* Deep blue */
-}
-
-/* Dark mode - Light blue for reasoning models */
-body[data-theme='dark'] .thinking-model,
-body[data-theme='dark'] .ant-typography.thinking-model,
-body[data-theme='dark'] span.thinking-model,
-body[data-theme='dark'] .ant-table-cell .thinking-model {
-  color: #dcebfc !important; /* Light blue */
+  color: #185fb0 !important; /* Deep blue */
 }
 
 /* Override any inline styles or other CSS */
-body[data-theme='light'] .thinking-model,
-body[data-theme='light'] .thinking-model *,
-body[data-theme='light'] .ant-typography.thinking-model,
-body[data-theme='light'] .ant-typography.thinking-model *,
-body[data-theme='light'] span.thinking-model,
-body[data-theme='light'] span.thinking-model * {
-  color: #1e3a8a !important; /* Deep blue */
-}
-
 body[data-theme='dark'] .thinking-model,
 body[data-theme='dark'] .thinking-model *,
 body[data-theme='dark'] .ant-typography.thinking-model,
 body[data-theme='dark'] .ant-typography.thinking-model *,
 body[data-theme='dark'] span.thinking-model,
 body[data-theme='dark'] span.thinking-model * {
-  color: #dcebfc !important; /* Light blue */
+  color: #d4e6fb !important; /* Light blue */
 }
 
 /* 加载指示器的样式 */

@@ -524,6 +524,7 @@ export default function RankingTable() {
     isLoading,
     error,
     datasetOrder,
+    getAllDatasetsForOrdering,
   } = useTableStore();
 
   const [editingModel, setEditingModel] = useState<Model | null>(null);
@@ -535,23 +536,28 @@ export default function RankingTable() {
     (a, b) => a.sortOrder - b.sortOrder
   );
 
+  // Get ALL datasets (including hidden ones) for column order management
+  const allDatasetsIncludingHidden = getAllDatasetsForOrdering().sort(
+    (a, b) => a.sortOrder - b.sortOrder
+  );
+
   // Define column order state, initialize from store's datasetOrder
   const [columnOrder, setColumnOrder] = React.useState(() => {
     if (datasetOrder.length > 0) {
       // Filter out invalid dataset IDs and add any missing ones
-      const allDatasetIds = allDatasets.map(d => d.id);
+      const allDatasetIds = allDatasetsIncludingHidden.map(d => d.id);
       const validStoredOrder = datasetOrder.filter(id =>
         allDatasetIds.includes(id)
       );
       const missingIds = allDatasetIds.filter(id => !datasetOrder.includes(id));
       return ['model', ...validStoredOrder, ...missingIds];
     }
-    return ['model', ...allDatasets.map(d => d.id)];
+    return ['model', ...allDatasetsIncludingHidden.map(d => d.id)];
   });
 
   // Update column order when datasets or store's datasetOrder changes
   React.useEffect(() => {
-    const allDatasetIds = allDatasets.map(d => d.id);
+    const allDatasetIds = allDatasetsIncludingHidden.map(d => d.id);
 
     if (datasetOrder.length > 0) {
       // Use store's order but ensure all current datasets are included
@@ -566,7 +572,7 @@ export default function RankingTable() {
       const newOrder = ['model', ...allDatasetIds];
       setColumnOrder(newOrder);
     }
-  }, [allDatasets.length, datasetOrder]);
+  }, [allDatasetsIncludingHidden.length, datasetOrder]);
 
   const sensors = useSensors(
     useSensor(PointerSensor),

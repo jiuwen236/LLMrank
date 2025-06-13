@@ -31,7 +31,13 @@ export default function LoadDialog({
   const [loading, setLoading] = useState(false);
   const [usePassword, setUsePassword] = useState(false);
   const { t } = useTranslation();
-  const { loadUserTable, saveUserTable, currentUserId, adminPassword, setAdminPassword } = useTableStore();
+  const {
+    loadUserTable,
+    saveUserTable,
+    currentUserId,
+    adminPassword,
+    setAdminPassword,
+  } = useTableStore();
 
   // Check for cached admin password when dialog opens
   useEffect(() => {

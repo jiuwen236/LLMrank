@@ -405,7 +405,11 @@ export default function Toolbar() {
                     </Text>
                   </div>
                 </div>
-                <Button type="primary" size="small" onClick={handleRestoreDefault}>
+                <Button
+                  type="primary"
+                  size="small"
+                  onClick={handleRestoreDefault}
+                >
                   {t('dialog.reset.restoreDefaultBtn')}
                 </Button>
               </div>

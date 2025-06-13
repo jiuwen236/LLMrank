@@ -67,6 +67,8 @@ interface TableStore extends TableState {
   getVisibleDatasets: () => Dataset[];
   getModelInfoDatasets: () => Dataset[];
   getAllVisibleDatasets: () => Dataset[];
+  getAllDatasetsForOrdering: () => Dataset[];
+  getAllModelsForOrdering: () => Model[];
 }
 
 const API_BASE = 'http://124.221.176.216:3000';
@@ -311,14 +313,26 @@ export const useTableStore = create<TableStore>()(
 
         // Initialize order arrays if empty
         const currentState = get();
+        // Always include ALL models and datasets in order arrays, even if they are hidden
+        // This ensures that when users unhide items, they maintain their proper position
         const modelOrder =
           currentState.modelOrder.length > 0
             ? currentState.modelOrder
-            : models.map((m: Model) => m.id);
+            : models
+                .sort(
+                  (a: Model, b: Model) =>
+                    (a.sortOrder || 0) - (b.sortOrder || 0)
+                )
+                .map((m: Model) => m.id);
         const datasetOrder =
           currentState.datasetOrder.length > 0
             ? currentState.datasetOrder
-            : datasets.map((d: Dataset) => d.id);
+            : datasets
+                .sort(
+                  (a: Dataset, b: Dataset) =>
+                    (a.sortOrder || 0) - (b.sortOrder || 0)
+                )
+                .map((d: Dataset) => d.id);
 
         set({
           models,
@@ -565,8 +579,10 @@ export const useTableStore = create<TableStore>()(
       },
 
       showHiddenModels: (modelIds: string[]) => {
-        const { hiddenModels, models } = get();
+        const { hiddenModels, models, modelOrder } = get();
         const newHidden = new Set(hiddenModels);
+        let updatedModels = models;
+        let updatedModelOrder = [...modelOrder];
 
         // For each model to show, remove it from hidden set
         modelIds.forEach(id => {
@@ -576,14 +592,41 @@ export const useTableStore = create<TableStore>()(
           // by updating the model's isHidden property to false
           const model = models.find(m => m.id === id);
           if (model && model.isHidden) {
-            const newModels = models.map(m =>
+            updatedModels = updatedModels.map(m =>
               m.id === id ? { ...m, isHidden: false } : m
             );
-            set({ models: newModels });
+          }
+
+          // Add to modelOrder if not already present to maintain drag order
+          if (!updatedModelOrder.includes(id)) {
+            // Find the correct position based on the model's sortOrder
+            const model = models.find(m => m.id === id);
+            if (model) {
+              // Insert at position based on sortOrder
+              const insertIndex = updatedModelOrder.findIndex(orderId => {
+                const orderModel = models.find(m => m.id === orderId);
+                return orderModel && orderModel.sortOrder > model.sortOrder;
+              });
+
+              if (insertIndex === -1) {
+                // If no model with higher sortOrder found, append to end
+                updatedModelOrder.push(id);
+              } else {
+                // Insert at the correct position
+                updatedModelOrder.splice(insertIndex, 0, id);
+              }
+            } else {
+              // Fallback: append to end if model not found
+              updatedModelOrder.push(id);
+            }
           }
         });
 
-        set({ hiddenModels: newHidden });
+        set({
+          hiddenModels: newHidden,
+          models: updatedModels,
+          modelOrder: updatedModelOrder,
+        });
       },
 
       updateModel: (modelId: string, updates: Partial<Model>) => {
@@ -690,8 +733,10 @@ export const useTableStore = create<TableStore>()(
       },
 
       showHiddenDatasets: (datasetIds: string[]) => {
-        const { hiddenDatasets, datasets } = get();
+        const { hiddenDatasets, datasets, datasetOrder } = get();
         const newHidden = new Set(hiddenDatasets);
+        let updatedDatasets = datasets;
+        let updatedDatasetOrder = [...datasetOrder];
 
         // For each dataset to show, remove it from hidden set
         datasetIds.forEach(id => {
@@ -701,14 +746,43 @@ export const useTableStore = create<TableStore>()(
           // by updating the dataset's isHidden property to false
           const dataset = datasets.find(d => d.id === id);
           if (dataset && dataset.isHidden) {
-            const newDatasets = datasets.map(d =>
+            updatedDatasets = updatedDatasets.map(d =>
               d.id === id ? { ...d, isHidden: false } : d
             );
-            set({ datasets: newDatasets });
+          }
+
+          // Add to datasetOrder if not already present to maintain drag order
+          if (!updatedDatasetOrder.includes(id)) {
+            // Find the correct position based on the dataset's sortOrder
+            const dataset = datasets.find(d => d.id === id);
+            if (dataset) {
+              // Insert at position based on sortOrder
+              const insertIndex = updatedDatasetOrder.findIndex(orderId => {
+                const orderDataset = datasets.find(d => d.id === orderId);
+                return (
+                  orderDataset && orderDataset.sortOrder > dataset.sortOrder
+                );
+              });
+
+              if (insertIndex === -1) {
+                // If no dataset with higher sortOrder found, append to end
+                updatedDatasetOrder.push(id);
+              } else {
+                // Insert at the correct position
+                updatedDatasetOrder.splice(insertIndex, 0, id);
+              }
+            } else {
+              // Fallback: append to end if dataset not found
+              updatedDatasetOrder.push(id);
+            }
           }
         });
 
-        set({ hiddenDatasets: newHidden });
+        set({
+          hiddenDatasets: newHidden,
+          datasets: updatedDatasets,
+          datasetOrder: updatedDatasetOrder,
+        });
       },
 
       updateDataset: (datasetId: string, updates: Partial<Dataset>) => {
@@ -999,6 +1073,44 @@ export const useTableStore = create<TableStore>()(
         return visibleDatasets.sort((a, b) => {
           const aIndex = datasetOrder.indexOf(a.id);
           const bIndex = datasetOrder.indexOf(b.id);
+          if (aIndex === -1 && bIndex === -1) return a.sortOrder - b.sortOrder;
+          if (aIndex === -1) return 1;
+          if (bIndex === -1) return -1;
+          return aIndex - bIndex;
+        });
+      },
+
+      getAllDatasetsForOrdering: () => {
+        const { datasets, datasetOrder } = get();
+        // Return ALL datasets including hidden ones, but exclude permanent control fields (id < 10)
+        // This is used for column order management to ensure hidden datasets maintain their position
+        const allDatasets = datasets.filter(d => {
+          const isControlField = parseInt(d.id) < 10 && !isNaN(parseInt(d.id));
+          return !isControlField;
+        });
+
+        return allDatasets.sort((a, b) => {
+          const aIndex = datasetOrder.indexOf(a.id);
+          const bIndex = datasetOrder.indexOf(b.id);
+          if (aIndex === -1 && bIndex === -1) return a.sortOrder - b.sortOrder;
+          if (aIndex === -1) return 1;
+          if (bIndex === -1) return -1;
+          return aIndex - bIndex;
+        });
+      },
+
+      getAllModelsForOrdering: () => {
+        const { models, modelOrder } = get();
+        // Return ALL models including hidden ones, but exclude permanent control fields (id < 10)
+        // This is used for row order management to ensure hidden models maintain their position
+        const allModels = models.filter(m => {
+          const isControlField = parseInt(m.id) < 10 && !isNaN(parseInt(m.id));
+          return !isControlField;
+        });
+
+        return allModels.sort((a, b) => {
+          const aIndex = modelOrder.indexOf(a.id);
+          const bIndex = modelOrder.indexOf(b.id);
           if (aIndex === -1 && bIndex === -1) return a.sortOrder - b.sortOrder;
           if (aIndex === -1) return 1;
           if (bIndex === -1) return -1;
