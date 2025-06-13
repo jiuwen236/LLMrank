@@ -12,7 +12,7 @@ body {
     'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
-  background-color: rgb(253, 253, 253);
+  background-color: var(--bg-color);
   min-height: 100vh;
 }
 
@@ -22,7 +22,7 @@ body {
   display: flex;
   flex-direction: column;
   padding: 0;
-  background-color: rgb(253, 253, 253);
+  background-color: var(--bg-color);
 }
 
 /* 主容器 */
